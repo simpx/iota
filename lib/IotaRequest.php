@@ -13,42 +13,71 @@ interface IotaRequestInterface {
 }
 class IotaRequest implements IotaRequestInterface{
 	public static function get($value = '', $pattern = '', $default = null){
-		return self::getCheckFromArry($_GET, $value, $pattern, $default);
-	}	
+		$get = self::getCheckFromArry($_GET, $value, $pattern, $default);
+		if(DEBUG){
+			$logger = IotaLog::getLogger('IotaRequest', 'get');
+			$log = array('value'=>$value,
+						'pattern'=>$pattern,
+						'default'=>$default,
+						'result'=>$get);
+			$logger->log(Level_FINE, $log);
+		}
+		return $get;
+	}
 	public static function post($value = '', $pattern = '', $default = null){
-		return self::getCheckFromArry($_POST, $value, $pattern, $default);
+		$post = self::getCheckFromArry($_POST, $value, $pattern, $default);
+		if(DEBUG){
+			$logger = IotaLog::getLogger('IotaRequest', 'post');
+			$log = array('value'=>$value,
+						'pattern'=>$pattern,
+						'default'=>$default,
+						'result'=>$post);
+			$logger->log(Level_FINE, $log);
+		}
+		return $post;
 	}
 	public static function data($value = '', $pattern = '', $default = null){
+		$logger = IotaLog::getLogger('IotaRequest', 'data');
 		if($value == ''){
-			return ArrayUtils::merge(self::get(), self::post());	
+			$data = ArrayUtils::merge(self::get(), self::post());	
 		}	
 		else{
-			return is_null(self::get($value, $pattern, $default))? 
+			$data = is_null(self::get($value, $pattern, $default))? 
 				self::post($value, $pattern, $default): self::get($value, $pattern, $default);
 		}
+		if(DEBUG){
+			$logger = IotaLog::getLogger('IotaRequest', 'data');
+			$log = array('value'=>$value,
+						'pattern'=>$pattern,
+						'default'=>$default,
+						'result'=>$data);
+			$logger->log(Level_FINE, $log);
+		}
+		return $data;
 	}
 	private static function getCheckFromArry($array, $value = '', $pattern = '', $default = null){
 		if($value == ''){
-			return $array;
+			$result =  $array;
 		}	
 		else{
 			switch (true) {
 				case !isset($array[$value]):
-					return $default;
+					$result = $default;
 					break;
 				case empty($pattern):
 				case preg_match($pattern, $array[$value]):
-					return $array[$value];
+					$result = $array[$value];
 					break;
 				default:
 					if($default === null){
 						throw new IotaException($value.'is valid',$value,IE_USER_ERROR);
 					}
 					else{
-						return $default;
+						$result = $default;
 					}
 					break;
 			}
 		}
+		return $result;
 	}
 }

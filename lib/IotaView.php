@@ -7,8 +7,10 @@
  */
 interface IotaViewInterface {
 	public static function render($view, $vars, $return=false);	
+	public static function renderBase($base = '');
+	public static function renderAppend($appendValue = '',$appendView = '');
 }
-class IotaView {
+class IotaView implements IotaViewInterface {
 	private static $config = array('viewPath'=>'',
 									'ext'=>'html');
 	private static $base = '';
@@ -44,8 +46,10 @@ class IotaView {
 		}
 	}
 	public static function render($view, $vars='', $var='page', $return=false){
+		$logger = IotaLog::getLogger('IotaView','render');
+		if(DEBUG)$logger->log(Level_FINE, 'render the view',$view);
 		if(empty(self::$base)){
-			self::excuteRender($view, $vars, $var);	
+			return self::excuteRender($view, $vars, $var);	
 		}	
 		else{
 			$page = self::excuteRender($view, $vars, true);	
@@ -57,11 +61,14 @@ class IotaView {
 			if(!empty($append)){
 				$baseVars = ArrayUtils::merge($baseVars, $append);
 			}
-			self::excuteRender(self::$base,$baseVars,$return);
+			return self::excuteRender(self::$base,$baseVars,$return);
 		}
 	}
 	public static function excuteRender($view, $vars='', $return=false){
+		$logger = IotaLog::getLogger('IotaView','excuteRender');
 		$viewPath = self::getRealPath($view);
+		$logger->log(Level_FINE, 'the real path of view to be render',$viewPath);
+		$logger->log(Level_FINE, 'is return?',$return);
 		if(file_exists($viewPath)){
 			ob_start();
 			if(!empty($vars)){

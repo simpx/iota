@@ -37,14 +37,17 @@ class IotaDb {
 		$this->limit = '';
 		$this->orderby = '';
 		$this->where = '';
+		$logger = IotaLog::getLogger('IotaDb','excute');
+		if (DEBUG) $logger->log(Level_FINE, $sql);
 		return $this->query($sql);	
 	}
 	public function query($sql){
+		$logger = IotaLog::getLogger('IotaDb','query');
 		if($this->query = mysql_query($sql, $this->getDb())){
-			//original:return $this;
 			return $this->query;
 		}	
 		else{
+			if (DEBUG) $logger->log(Level_ERROR, $sql);
 			throw new IotaException(mysql_error($this->getDb()),$sql,IE_DB_ERROR);	
 		}
 	}
