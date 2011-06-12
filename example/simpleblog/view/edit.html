@@ -1,0 +1,13 @@
+<h1>Edit <?=$post->title?></h1>
+ 
+<form action="" method="post">
+<input name=title value="<?=$post->title?>"/><br>
+<textarea name=content rows="20" cols="60"><?=$post->content?></textarea><br>
+<input type="submit"/>
+</form>
+ 
+ 
+<h2>Delete post</h2>
+<form action="../delete/<?=$post->id?>" method="post">
+    <input type="submit" value="Delete post"/>
+</form>

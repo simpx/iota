@@ -1,0 +1,9 @@
+<h1>Blog Posts</h1>
+<ul>
+<?foreach($posts as $post){?>
+	<li>
+        <a href="view/<?=$post->id?>"><?=$post->title?></a> 
+        <a href="edit/<?=$post->id?>">Edit</a>
+    </li>
+<?}?>
+</ul>
